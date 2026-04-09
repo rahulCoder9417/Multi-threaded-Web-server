@@ -25,6 +25,17 @@ impl ThreadPool{
         let job = Box::new(f);
         self.sender.send(job).unwrap();
     }
+
+}
+
+impl Drop for ThreadPool {
+    fn drop(&mut self) {
+         for worker in  self.workers.drain(..) {
+            println!("Shutting down worker {}", worker.id);
+
+            worker.thread.join().unwrap();
+        }
+    }
 }
 
 struct Worker{
