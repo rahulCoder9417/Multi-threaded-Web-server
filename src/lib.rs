@@ -3,8 +3,8 @@ use std::{thread,sync::{mpsc,Mutex,Arc}};
 pub struct ThreadPool{
     sender:mpsc::Sender<Job>,
     workers: Vec<Worker>
-};
-struct Job;
+}
+type Job = Box<dyn FnOnce() + Send + 'static>;
 impl ThreadPool{
     pub fn new(size:usize)->ThreadPool{
         assert!(size > 0);
