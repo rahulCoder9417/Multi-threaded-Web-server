@@ -1,17 +1,20 @@
-use std::thread;
+use std::{thread,sync::mpsc};
+
 pub struct ThreadPool{
+    sender:mpsc::Sender<Job>,
     workers: Vec<Worker>
 };
-
+struct Job;
 impl ThreadPool{
     pub fn new(size:usize)->ThreadPool{
         assert!(size > 0);
+        let (sender,receiver) = mpsc::channel();
         let mut workers = Vec::with_capacity(size);
         for id in 0..size {
             workers.push(Worker::new(id));
         }
         ThreadPool {
-            workers
+            workers,sender
         }
     }
     pub fn execute<F>(&self,f:F)
